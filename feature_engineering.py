@@ -3,7 +3,7 @@ import pandas as pd
 df = pd.read_csv('data/titanic.csv') # You can also use url to read data directly from the web (e.g. 'https://raw.githubusercontent.com/datasciencedojo/datasets/master/titanic.csv')
 
 # Display first few rows
-df.head()
+# df.head()
 
 # Check shape and column information
 # print(df.shape)
@@ -26,7 +26,7 @@ df['Embarked'] = df['Embarked'].fillna(df['Embarked'].mode()[0]) # Fill first va
 # Check for missing values again
 # print(df.isnull().sum())
 
-# Convert categorical variables to numerical 
+# Convert categorical variables to numerical [One-Hot encoding]
 # Method 1: Using pandas get_dummies
 # df = pd.get_dummies(df, columns=['Sex', 'Embarked'], drop_first=True) # drop_first=True to avoid multicollinearity
 
@@ -43,4 +43,25 @@ df['Embarked'] = df['Embarked'].map({'S': 0, 'C': 1, 'Q': 2})
 # Display first few rows after encoding
 # print(df.head())
 
-# Split the data into features and target
+# Feature Engineering
+# Create a new feature 'FamilySize' by adding 'SibSp' and 'Parch' [SibSp: Siblings/Spouses, Parch: Parents/Children]
+df['FamilySize'] = df['SibSp'] + df['Parch'] + 1 # Add 1 to include the passenger themselves
+
+# Create a new feature 'IsAlone' from 'FamilySize'
+df['IsAlone'] = 1 # Initialize to 1 for 'alone'
+df.loc[df['FamilySize'] > 1, 'IsAlone'] = 0 # Set to 0 if not alone
+
+# Display first few rows after feature engineering
+# print(df.head())
+
+# Feature Scaling
+# Coming Soon...
+
+# Feature Selection
+# Coming Soon...
+
+# Save the processed data
+df.to_csv('output/titanic_processed.csv', index=False) # Save to CSV file without row indices
+
+
+
