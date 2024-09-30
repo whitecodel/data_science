@@ -1,0 +1,163 @@
+{
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "# Mastering Feature Engineering with the Titanic Dataset
+",
+        "In this notebook, we will go through the complete feature engineering process using the Titanic dataset, including handling missing values, encoding, creating new features, feature scaling, feature selection, and data visualization."
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {},
+      "outputs": [],
+      "source": [
+        "# Import necessary libraries
+",
+        "import pandas as pd
+",
+        "import numpy as np
+",
+        "import matplotlib.pyplot as plt
+",
+        "import seaborn as sns
+",
+        "from sklearn.preprocessing import StandardScaler
+",
+        "from sklearn.ensemble import RandomForestClassifier
+",
+        "
+",
+        "# Load Titanic dataset
+",
+        "df = pd.read_csv('https://raw.githubusercontent.com/datasciencedojo/datasets/master/titanic.csv')
+",
+        "
+",
+        "# Data Preprocessing
+",
+        "# Drop irrelevant columns
+",
+        "df = df.drop(['PassengerId', 'Name', 'Ticket', 'Cabin'], axis=1)
+",
+        "
+",
+        "# Handling Missing Values
+",
+        "df['Age'] = df['Age'].fillna(df['Age'].mean())  # Fill missing values in 'Age' with the mean age
+",
+        "df['Embarked'] = df['Embarked'].fillna(df['Embarked'].mode()[0])  # Fill missing values in 'Embarked' with the most common port
+",
+        "
+",
+        "# Encoding Categorical Variables
+",
+        "df['Sex'] = df['Sex'].map({'female': 0, 'male': 1})
+",
+        "df['Embarked'] = df['Embarked'].map({'S': 0, 'C': 1, 'Q': 2})
+",
+        "
+",
+        "# Creating New Features
+",
+        "df['FamilySize'] = df['SibSp'] + df['Parch'] + 1  # Create a new feature 'FamilySize'
+",
+        "df['IsAlone'] = 1  # Create a new feature 'IsAlone'
+",
+        "df.loc[df['FamilySize'] > 1, 'IsAlone'] = 0  # Set to 0 if not alone
+",
+        "
+",
+        "# Feature Scaling
+",
+        "scaler = StandardScaler()
+",
+        "df[['Age', 'Fare']] = scaler.fit_transform(df[['Age', 'Fare']])
+",
+        "
+",
+        "# Feature Selection
+",
+        "X = df.drop('Survived', axis=1)
+",
+        "y = df['Survived']
+",
+        "
+",
+        "# Random Forest for feature importance
+",
+        "model = RandomForestClassifier()
+",
+        "model.fit(X, y)
+",
+        "feature_importances = pd.Series(model.feature_importances_, index=X.columns)
+",
+        "
+",
+        "# Visualisation: Correlation Matrix
+",
+        "plt.figure(figsize=(10, 8))
+",
+        "sns.heatmap(df.corr(), annot=True, cmap='coolwarm')
+",
+        "plt.title('Correlation Matrix')
+",
+        "plt.show()
+",
+        "
+",
+        "# Visualisation: Age Distribution by Survival Status
+",
+        "plt.figure(figsize=(10, 6))
+",
+        "sns.histplot(data=df, x='Age', hue='Survived', multiple='stack')
+",
+        "plt.title('Age Distribution by Survival Status')
+",
+        "plt.show()
+",
+        "
+",
+        "# Visualisation: Family Size vs. Survival Rate
+",
+        "plt.figure(figsize=(10, 6))
+",
+        "sns.barplot(data=df, x='FamilySize', y='Survived', ci=None)
+",
+        "plt.title('Family Size vs. Survival Rate')
+",
+        "plt.show()
+",
+        "
+",
+        "# Save the processed data
+",
+        "df.to_csv('titanic_processed.csv', index=False)
+",
+        "
+",
+        "# Display feature importances
+",
+        "print('Feature Importances:')
+",
+        "print(feature_importances.sort_values(ascending=False))"
+      ]
+    }
+  ],
+  "metadata": {
+    "kernelspec": {
+      "display_name": "Python 3",
+      "language": "python",
+      "name": "python3"
+    },
+    "language_info": {
+      "name": "python",
+      "version": "3.7.0"
+    }
+  },
+  "nbformat": 4,
+  "nbformat_minor": 4
+}
